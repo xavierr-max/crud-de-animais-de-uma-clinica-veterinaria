@@ -1,5 +1,5 @@
 import express from 'express';
-import Animal from './Entities/Animal.js';
+import Animal from './DTOs/Animal.js';
 
 const app = express();
 const port = 3000;
@@ -21,7 +21,7 @@ function validarAnimal(dados) {
     ];
 
     return camposObrigatorios.filter(
-        (campo) => dados[campo] === undefined || dados[campo] === null || dados[campo] === '');
+        campo => dados[campo] === undefined || dados[campo] === null || dados[campo] === '');
 }
 
 app.get('/', (req, res) => {
@@ -55,7 +55,7 @@ app.post('/animais', (req, res) => {
 
         const { codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = req.body;
         const codigoTexto = String(codigo);
-        const animalJaCadastrado = animais.some((item) => item.codigo === codigoTexto);
+        const animalJaCadastrado = animais.some(item => item.codigo === codigoTexto);
 
         if (animalJaCadastrado) {
             return res.status(409).json({ mensagem: 'Ja existe um animal com esse codigo.' });
@@ -126,8 +126,75 @@ app.put('/animais/:codigo', (req, res) => {
     }
 });
 
+app.patch('/animais/:codigo', (req, res) => {
+    try {
+        const indiceAnimal = animais.findIndex((item) => item.codigo === req.params.codigo);
+
+        if (indiceAnimal === -1) {
+            return res.status(404).json({ mensagem: 'Animal nao encontrado.' });
+        }
+
+        const camposPermitidos = [
+            'nome',
+            'especie',
+            'raca',
+            'idade',
+            'peso',
+            'nomeTutor',
+            'telefoneTutor',
+        ];
+
+        const camposRecebidos = Object.keys(req.body);
+
+        if (camposRecebidos.length === 0) {
+            return res.status(400).json({ mensagem: 'Informe ao menos um campo para atualizar.' });
+        }
+
+        const camposInvalidos = camposRecebidos.filter(campo => !camposPermitidos.includes(campo));
+
+        if (camposInvalidos.length > 0) {
+            return res.status(400).json({
+                mensagem: 'Campos invalidos para atualizacao.',
+                campos: camposInvalidos,
+            });
+        }
+
+        const animalAtual = animais[indiceAnimal];
+        const dadosAtualizados = {
+            codigo: animalAtual.codigo,
+            nome: req.body.nome ?? animalAtual.nome,
+            especie: req.body.especie ?? animalAtual.especie,
+            raca: req.body.raca ?? animalAtual.raca,
+            idade: req.body.idade ?? animalAtual.idade,
+            peso: req.body.peso ?? animalAtual.peso,
+            nomeTutor: req.body.nomeTutor ?? animalAtual.nomeTutor,
+            telefoneTutor: req.body.telefoneTutor ?? animalAtual.telefoneTutor,
+        };
+
+        const animalAtualizado = new Animal(
+            dadosAtualizados.codigo,
+            dadosAtualizados.nome,
+            dadosAtualizados.especie,
+            dadosAtualizados.raca,
+            Number(dadosAtualizados.idade),
+            Number(dadosAtualizados.peso),
+            dadosAtualizados.nomeTutor,
+            dadosAtualizados.telefoneTutor
+        );
+
+        animais[indiceAnimal] = animalAtualizado;
+
+        return res.status(200).json({
+            mensagem: 'Animal atualizado parcialmente com sucesso.',
+            animal: animalAtualizado,
+        });
+    } catch (error) {
+        return res.status(500).json({ mensagem: 'Erro ao atualizar animal.' });
+    }
+});
+
 app.delete('/animais/:codigo', (req, res) => {
-    const indiceAnimal = animais.findIndex((item) => item.codigo === req.params.codigo);
+    const indiceAnimal = animais.findIndex(item => item.codigo === req.params.codigo);
 
     if (indiceAnimal === -1) {
         return res.status(404).json({ mensagem: 'Animal nao encontrado.' });
