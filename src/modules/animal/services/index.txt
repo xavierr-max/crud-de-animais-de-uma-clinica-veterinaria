@@ -1,0 +1,2 @@
+- Atua como classes com métodos únicos para uma tarefa.
+- Utilizadas pelos controllers (handlers).

@@ -1,5 +1,5 @@
 import express from 'express';
-import Animal from './DTOs/Animal.js';
+import Animal from './modules/animal/models/animal.model.js';
 
 const app = express();
 const port = 3000;
