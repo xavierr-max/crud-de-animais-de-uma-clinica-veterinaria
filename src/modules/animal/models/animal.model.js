@@ -12,9 +12,22 @@ class AnimalModel {
         this.telefoneTutor = telefoneTutor;
     }
 
-    static cadastrarAnimal(matricula, nome, email) {
-        const animal = { matricula, nome, email };
+    static cadastrarAnimal(dados) {
+        const { codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = dados;
+
+        const animal = new AnimalModel(
+            codigo,
+            nome,
+            especie,
+            raca,
+            idade,
+            peso,
+            nomeTutor,
+            telefoneTutor
+        );
+
         animais.push(animal);
+        return animal;
     }
 
     static listarAnimais() {
@@ -25,8 +38,10 @@ class AnimalModel {
         return animais.find(animal => animal.codigo === codigo);
     }
 
-    static atualizarAnimal(codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor) {
+    static atualizarAnimal(codigo, dados) {
         const animal = AnimalModel.buscarAnimalPorCodigo(codigo);
+        const { nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = dados;
+
         if (animal) {
             animal.nome = nome;
             animal.especie = especie;
@@ -36,13 +51,18 @@ class AnimalModel {
             animal.nomeTutor = nomeTutor;
             animal.telefoneTutor = telefoneTutor;
         }
+
+        return animal;
     }
 
     static deletarAnimal(codigo) {
         const index = animais.findIndex(animal => animal.codigo === codigo);
         if (index !== -1) {
-            animais.splice(index, 1);
+            const [animalRemovido] = animais.splice(index, 1);
+            return animalRemovido;
         }
+
+        return null;
     }
 }
 
