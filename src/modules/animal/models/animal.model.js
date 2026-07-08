@@ -43,13 +43,13 @@ class AnimalModel {
         const { nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = dados;
 
         if (animal) {
-            animal.nome = nome;
-            animal.especie = especie;
-            animal.raca = raca;
-            animal.idade = idade;
-            animal.peso = peso;
-            animal.nomeTutor = nomeTutor;
-            animal.telefoneTutor = telefoneTutor;
+            animal.nome = nome || animal.nome;
+            animal.especie = especie || animal.especie;
+            animal.raca = raca || animal.raca;
+            animal.idade = idade || animal.idade;
+            animal.peso = peso || animal.peso;
+            animal.nomeTutor = nomeTutor || animal.nomeTutor;
+            animal.telefoneTutor = telefoneTutor || animal.telefoneTutor;
         }
 
         return animal;
@@ -58,8 +58,8 @@ class AnimalModel {
     static deletarAnimal(codigo) {
         const index = animais.findIndex(animal => animal.codigo === codigo);
         if (index !== -1) {
-            const [animalRemovido] = animais.splice(index, 1);
-            return animalRemovido;
+            const animalRemovido = animais.splice(index, 1);
+            return animalRemovido[0];
         }
 
         return null;
