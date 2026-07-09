@@ -35,7 +35,7 @@ class AnimalModel {
     }
 
     static buscarAnimalPorCodigo(codigo) {
-        return animais.find(animal => animal.codigo === codigo);
+        return animais.find(animal => String(animal.codigo) === String(codigo));
     }
 
     static atualizarAnimal(codigo, dados) {
@@ -56,7 +56,7 @@ class AnimalModel {
     }
 
     static deletarAnimal(codigo) {
-        const index = animais.findIndex(animal => animal.codigo === codigo);
+        const index = animais.findIndex(animal => String(animal.codigo) === String(codigo));
         if (index !== -1) {
             const animalRemovido = animais.splice(index, 1);
             return animalRemovido[0];
