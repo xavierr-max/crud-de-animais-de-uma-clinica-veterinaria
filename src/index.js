@@ -5,11 +5,9 @@ const app = express();
 
 app.use(express.json());
 
-app.use(router);
-
 const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
+app.get(['/', '/healthcheck', '/healcheck'], (req, res) => {
     const healthCheck = {
         status: 'online',
         mensagem: 'API de cadastro de animais operante',
@@ -20,6 +18,12 @@ app.get('/', (req, res) => {
     res.status(200).json(healthCheck);
 });
 
-app.listen(port, () => {
-    console.log(`Servidor rodando em http://localhost:${port}`);
-});
+app.use(router);
+
+if (!process.env.VERCEL) {
+    app.listen(port, () => {
+        console.log(`Servidor rodando em http://localhost:${port}`);
+    });
+}
+
+export default app;
