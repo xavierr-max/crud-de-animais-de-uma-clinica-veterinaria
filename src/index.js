@@ -1,11 +1,14 @@
 import express from 'express';
 import router from './modules/animal/routes/animal.route.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 
-const port = 3000;
+const port = process.env.PORTA || 3000;
 
 app.get('/', (req, res) => {
     const healthCheck = {

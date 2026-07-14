@@ -1,3 +1,18 @@
-const animais = [];
+import pg from 'pg';
+import dotenv from 'dotenv';
 
-export default animais;
+dotenv.config();
+
+const { Pool } = pg;
+
+const pool = new Pool({
+    user: process.env.PGUSER,
+    host: process.env.PGHOST,
+    database: process.env.PGDATABASE,
+    password: process.env.PGPASSWORD,
+    port: process.env.PGPORT,
+});
+
+console.log(await pool.query('SELECT NOW()'));
+
+export default pool;

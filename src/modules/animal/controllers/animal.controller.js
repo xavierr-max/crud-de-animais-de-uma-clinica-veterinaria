@@ -53,7 +53,7 @@ class AnimalController {
         }
     }
 
-    static atualizarAnimal(req, res) {
+    static async atualizarAnimal(req, res) {
         try {
             const { codigo } = req.params;
             const { nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = req.body;
@@ -62,7 +62,7 @@ class AnimalController {
                 return res.status(400).json({ mensagem: 'Todos os campos devem ser preenchidos.' });
             }
 
-            const animal = AnimalModel.atualizarAnimal(codigo, {
+            const animal = await AnimalModel.atualizarAnimal(codigo, {
                 nome,
                 especie,
                 raca,
@@ -85,10 +85,10 @@ class AnimalController {
         }
     }
 
-    static deletarAnimal(req, res) {
+    static async deletarAnimal(req, res) {
         try {
             const { codigo } = req.params;
-            const animal = AnimalModel.deletarAnimal(codigo);
+            const animal = await AnimalModel.deletarAnimal(codigo);
 
             if (!animal) {
                 return res.status(404).json({ mensagem: 'Animal nao encontrado.' });

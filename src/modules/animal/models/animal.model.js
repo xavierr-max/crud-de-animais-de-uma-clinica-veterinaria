@@ -1,4 +1,4 @@
-import animais from "../../../config/database.js";
+import pool from "../../../config/database.js";
 
 class AnimalModel {
     constructor(codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor) {
@@ -12,57 +12,61 @@ class AnimalModel {
         this.telefoneTutor = telefoneTutor;
     }
 
-    static cadastrarAnimal(dados) {
+    static async cadastrarAnimal(dados) {
         const { codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = dados;
+        const valores = [codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor];
+        const query = `
+            INSERT INTO animal
+                (codigo, nome, especie, raca, idade, peso, nome_tutor, telefone_tutor)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING *
+        `;
 
-        const animal = new AnimalModel(
-            codigo,
-            nome,
-            especie,
-            raca,
-            idade,
-            peso,
-            nomeTutor,
-            telefoneTutor
-        );
+        const resultado = await pool.query(query, valores);
 
-        animais.push(animal);
-        return animal;
+        return resultado.rows[0];
     }
 
-    static listarAnimais() {
-        return animais;
+    static async listarAnimais() {
+        const query = 'SELECT * FROM animal';
+        const resultado = await pool.query(query);
+
+        return resultado.rows;
     }
 
-    static buscarAnimalPorCodigo(codigo) {
-        return animais.find(animal => String(animal.codigo) === String(codigo));
+    static async buscarAnimalPorCodigo(codigo) {
+        const valores = [codigo];
+        const query = 'SELECT * FROM animal WHERE codigo = $1';
+        const resultado = await pool.query(query, valores);
+
+        return resultado.rows[0] || null;
     }
 
-    static atualizarAnimal(codigo, dados) {
-        const animal = AnimalModel.buscarAnimalPorCodigo(codigo);
+    static async atualizarAnimal(codigo, dados) {
         const { nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = dados;
+        const valores = [nome, especie, raca, idade, peso, nomeTutor, telefoneTutor, codigo];
+        const query = `
+            UPDATE animal
+            SET nome = $1,
+                especie = $2,
+                raca = $3,
+                idade = $4,
+                peso = $5,
+                nome_tutor = $6,
+                telefone_tutor = $7
+            WHERE codigo = $8
+            RETURNING *
+        `;
+        const resultado = await pool.query(query, valores);
 
-        if (animal) {
-            animal.nome = nome || animal.nome;
-            animal.especie = especie || animal.especie;
-            animal.raca = raca || animal.raca;
-            animal.idade = idade || animal.idade;
-            animal.peso = peso || animal.peso;
-            animal.nomeTutor = nomeTutor || animal.nomeTutor;
-            animal.telefoneTutor = telefoneTutor || animal.telefoneTutor;
-        }
-
-        return animal;
+        return resultado.rows[0] || null;
     }
 
-    static deletarAnimal(codigo) {
-        const index = animais.findIndex(animal => String(animal.codigo) === String(codigo));
-        if (index !== -1) {
-            const animalRemovido = animais.splice(index, 1);
-            return animalRemovido[0];
-        }
+    static async deletarAnimal(codigo) {
+        const query = 'DELETE FROM animal WHERE codigo = $1 RETURNING *';
+        const resultado = await pool.query(query, [codigo]);
 
-        return null;
+        return resultado.rows[0] || null;
     }
 }
 
