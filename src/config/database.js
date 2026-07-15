@@ -13,6 +13,9 @@ const pool = new Pool({
     port: process.env.PGPORT,
 });
 
-console.log(await pool.query('SELECT NOW()'));
+const resultado = await pool.query('SELECT NOW()');
+
+console.log('Banco conectado com sucesso.');
+console.log('Horário do banco:', resultado.rows[0].now);
 
 export default pool;

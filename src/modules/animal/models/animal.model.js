@@ -43,6 +43,12 @@ class AnimalModel {
     }
 
     static async atualizarAnimal(codigo, dados) {
+        const validacao = await this.buscarAnimalPorCodigo(codigo);
+        
+        if (!validacao) {
+            throw new Error('Animal não encontrado');
+        }
+
         const { nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = dados;
         const valores = [nome, especie, raca, idade, peso, nomeTutor, telefoneTutor, codigo];
         const query = `

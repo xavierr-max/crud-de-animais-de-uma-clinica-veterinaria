@@ -1,19 +1,20 @@
 import AnimalModel from '../models/animal.model.js';
 
 class AnimalController {
-    static listarAnimais(req, res) {
+    
+    static async listarAnimais(req, res) {
         try {
-            const animais = AnimalModel.listarAnimais();
+            const animais = await AnimalModel.listarAnimais();
             res.status(200).json(animais);
         } catch (error) {
             res.status(500).json({ mensagem: 'Erro ao listar animais.' });
         }
     }
 
-    static buscarAnimalPorCodigo(req, res) {
+    static async buscarAnimalPorCodigo(req, res) {
         try {
             const { codigo } = req.params;
-            const animal = AnimalModel.buscarAnimalPorCodigo(codigo);
+            const animal = await AnimalModel.buscarAnimalPorCodigo(codigo);
 
             if (!animal) {
                 return res.status(404).json({ mensagem: 'Animal nao encontrado.' });
@@ -25,15 +26,16 @@ class AnimalController {
         }
     }
 
-    static cadastrarAnimal(req, res) {
+    static async cadastrarAnimal(req, res) {
         try {
             const { codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = req.body;
 
-            if (!codigo || !nome || !especie || !raca || !idade || !peso || !nomeTutor || !telefoneTutor) {
+            if ([codigo, nome, especie, raca, idade, peso, nomeTutor, telefoneTutor]
+                .some((campo) => campo === undefined || campo === null || campo === '')) {
                 return res.status(400).json({ mensagem: 'Todos os campos devem ser preenchidos.' });
             }
 
-            const animal = AnimalModel.cadastrarAnimal({
+            const animal = await AnimalModel.cadastrarAnimal({
                 codigo,
                 nome,
                 especie,
@@ -58,7 +60,8 @@ class AnimalController {
             const { codigo } = req.params;
             const { nome, especie, raca, idade, peso, nomeTutor, telefoneTutor } = req.body;
 
-            if (!nome || !especie || !raca || !idade || !peso || !nomeTutor || !telefoneTutor) {
+            if ([nome, especie, raca, idade, peso, nomeTutor, telefoneTutor]
+                .some((campo) => campo === undefined || campo === null || campo === '')) {
                 return res.status(400).json({ mensagem: 'Todos os campos devem ser preenchidos.' });
             }
 
